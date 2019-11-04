@@ -16,12 +16,12 @@ const db = new Pool({
 
 
 app.use(bodyParser())
-// get seluruh pegawai
+// get seluruh users
 app.get('/',async(req, res)=>{
     const resData = await db.query('select * from users')
     res.json(resData.rows)
 })
-// get pegawai by id
+// get users by id
 app.get('/:id',async(req, res)=>{
     const id = req.params.id
     const resData = await db.query(`select * from users where id=${id}`)
