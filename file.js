@@ -27,7 +27,7 @@ app.get('/:id',async(req, res)=>{
     const resData = await db.query(`select * from users where id=${id}`)
     res.json(resData.rows)
 })
-// menambah data pegawai
+// menambah data 
 app.post('/',async(req,res) => {
     try {
         const {nama, umur, alamat} = req.body
