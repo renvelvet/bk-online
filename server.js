@@ -7,10 +7,10 @@ const app = Express()
 const port = 3001
 
 const db = new Pool({
-    user: 'oiqcuocuhpeuco',
-    host: 'ec2-174-129-233-123.compute-1.amazonaws.com',
-    database: 'dbnmmdk5blufj6',
-    password: '9409491209166055a51aa29ec80fd583fa3c830164994d3cb60807cd1ed424da',
+    user: 'qnlgdbqfligteu',
+    host: 'ec2-174-129-253-140.compute-1.amazonaws.com',
+    database: 'deg6edsh7e8bok',
+    password: '7967abc40b08e7042435777e535b05ab8927f1ee045cd912fdb02964d7b17ade',
     port: 5432,
     ssl: true
 })
