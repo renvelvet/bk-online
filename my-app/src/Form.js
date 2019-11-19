@@ -17,7 +17,7 @@ class App extends Component{
         <Form style={{marginTop: 30}}>
           <Form.Row>
             <Form.Group as={Col} controlId="formGridName">
-              <Form.Label>Nama</Form.Label>
+              <Form.Label>Name</Form.Label>
               <Form.Control required type="text" placeholder="Enter Name" />
             </Form.Group>
 
@@ -49,7 +49,7 @@ class App extends Component{
           <Form.Row>
             <Form.Group as={Col} controlId="formGridDay">
               <Form.Label>Session</Form.Label>
-              <Form.Control required placeholder="Select Day" as="select">
+              <Form.Control required as="select">
                 <option>Monday</option>
                 <option>Tuesday</option>
                 <option>Wednesday</option>
@@ -60,7 +60,7 @@ class App extends Component{
 
             <Form.Group as={Col} controlId="formGridTime">
               <Form.Label>Time</Form.Label>
-              <Form.Control required placeholder="Select Time" as="select">
+              <Form.Control required as="select">
                 <option>8.00</option>
                 <option>9.00</option>
                 <option>10.00</option>
