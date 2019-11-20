@@ -5,7 +5,7 @@ import {
   Route,
   NavLink
 } from 'react-router-dom'
-import {Container, Nav, Alert, Table, Button, Form, Col, Modal} from 'react-bootstrap'
+import {Container, Nav, Alert, Table, FormControl, InputGroup, Button, Form, Col, Modal} from 'react-bootstrap'
 import Axios from 'axios'
 
 const urlHari = 'http://127.0.0.1:3001/jadwal/hari'
@@ -276,10 +276,83 @@ class App extends Component{
     
   }
   
+  TambahJadwal = () => {
+    return (
+      <Container>
+        <InputGroup style={{margin:10}} className="mb-3">
+         <InputGroup.Prepend>
+            <InputGroup.Text id="basic-addon1">A</InputGroup.Text>
+          </InputGroup.Prepend>
+          <FormControl
+            onChange={(event)=>this.setState({nama:event.target.value})}
+            style={{marginRight:10}}
+            placeholder="Nama"
+            aria-label="Nama"
+            aria-describedby="basic-addon1"
+          />
+          <InputGroup.Prepend>
+            <InputGroup.Text id="basic-addon1">B</InputGroup.Text>
+          </InputGroup.Prepend>
+          <FormControl
+            onChange={(event)=>this.setState({umur:event.target.value})}
+            style={{marginRight:10}}
+            placeholder="Umur"
+            aria-label="Umur"
+            aria-describedby="basic-addon1"
+          />
+          <InputGroup.Prepend>
+            <InputGroup.Text id="basic-addon1">C</InputGroup.Text>
+          </InputGroup.Prepend>
+          <FormControl
+          onChange={(event)=>this.setState({alamat:event.target.value})}
+           style={{marginRight:10}}
+            placeholder="Alamat"
+            aria-label="Alamat"
+            aria-describedby="basic-addon1"
+          />
+          <Button onClick={()=>this.postDataFromApi()} variant='primary'>ADD</Button>
+         </InputGroup>
+        {/* Tampilan Table */}
+        <Table striped bordered hover variant="dark">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Hari</th>
+              <th>Jam</th>
+              <th>Psikolog</th>
+              <th>Ubah Jadwal</th>
+            </tr>
+          </thead>
+          <tbody>
+           {this.state.jadwal.map((item, index)=>(
+             <tr key={index}>
+              <td>{item.hari}</td>
+              <td>{item.jam}</td>
+              <td>{item.psikolog}</td>
+              <td style={{width:50}}>
+                <Button variant='warning' onClick={()=>this.showModal(item)}>Edit/Delete</Button>
+              </td>
+           </tr>
+           ))}
+          </tbody>
+        </Table>
+      </Container>
+    )
+  }
+
   Admin = () => {
     return(
       // getDataFromAntrian()
       <Container>
+        <Nav variant="tabs" defaultActiveKey="/admin">
+          <Nav.Item>
+            <Nav.Link as={NavLink} to="/admin" activeClassName="selected">Antrian</Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link as={NavLink} to="/tambahjadwal" activeClassName="selected" eventKey="tambah-jadwal">Tambah Jadwal</Nav.Link>
+          </Nav.Item>
+        </Nav>
+
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -352,6 +425,9 @@ class App extends Component{
             </Route>*/}
             <Route path="/admin">
               <this.Admin />
+            </Route>
+            <Route path="/tambahjadwal">
+              <this.TambahJadwal />
             </Route>
           </Switch>
         </Container>
