@@ -55,16 +55,16 @@ app.put('/jadwal/hari/:hari/jam/:jam',async(req,res)=>{
     const hari = req.params.hari
     const jam = req.params.jam
     
-    await db.query(`update jadwal set hari = '${hari}', jam = '${jam}', psikolog = '${psikolog}', availability = ${availability}, approveid = ${approveid}
+    await db.query(`update jadwal set psikolog = '${psikolog}', availability = ${availability}, approveid = ${approveid}
     where hari = '${hari}' and jam = '${jam}'`)
     res.json('data berhasil diubah')
 })
 
 // delete jadwal by id
-app.delete('/jadwal/:id',async(req,res)=>{
+/*app.delete('/jadwal/:id',async(req,res)=>{
     const id = req.params.id
     await db.query(`DELETE FROM jadwal WHERE id = ${id}`)
-    res.json('Data terhapus')
+    res.json('Data terhapus')*/
 })
 
 module.exports = app

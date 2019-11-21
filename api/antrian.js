@@ -22,8 +22,8 @@ app.get('/antrian',async(req, res)=>{
 app.post('/antrian',async(req,res) => {
     try {
         const id_request= req.query.id_request;
-        const {hari, jam, nama, nim, jurusan, id_request, deskripsi} = req.body
-        const id_regist= await db.query(`select id_regist from mahasiswa where nim=${nim}`)
+        const {hari, jam, nama, nim, deskripsi} = req.body
+        const id_regist= await db.query(`select id_regist from mahasiswa where nim=${nim} and nama=${nama}`)
         await db.query(`insert into antrian(id_request, id_regist, hari, jam, deskripsi)
          values('${id_request}', '${id_regist}', '${hari}', '${jam}', '${deskripsi}')`)
         console.log(req.body)
