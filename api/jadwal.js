@@ -64,7 +64,7 @@ app.put('/jadwal/hari/:hari/jam/:jam',async(req,res)=>{
 /*app.delete('/jadwal/:id',async(req,res)=>{
     const id = req.params.id
     await db.query(`DELETE FROM jadwal WHERE id = ${id}`)
-    res.json('Data terhapus')*/
-})
+    res.json('Data terhapus')
+})*/
 
 module.exports = app
