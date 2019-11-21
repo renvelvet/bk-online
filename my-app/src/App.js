@@ -5,7 +5,7 @@ import {
   Route,
   NavLink
 } from 'react-router-dom'
-import {Container, Nav, Alert, Table, FormControl, InputGroup, Button, Form, Col, Modal} from 'react-bootstrap'
+import {Container, Nav, Jumbotron, Table, FormControl, InputGroup, Button, Form, Col, Modal} from 'react-bootstrap'
 import Axios from 'axios'
 
 const urlHari = 'http://127.0.0.1:3001/jadwal/hari'
@@ -393,29 +393,26 @@ class App extends Component{
     return (
       <Router>
         <Container>
-          <Alert variant="success" style={{marginTop:10}}>
-            <Alert.Heading>Selamat Datang di Layanan BK-Online!</Alert.Heading>
+          <Nav variant="pills" >
+            <Nav.Item>
+              <Nav.Link as={NavLink} to="/" activeClassName="selected" eventKey="user1" title="user1">User1</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link as={NavLink} to="/user2" activeClassName="selected" eventKey="user2" title="user2">User2</Nav.Link>
+            </Nav.Item>
+            <Nav.Item  onClick={()=>this.getDataFromAntrian()}>
+              <Nav.Link as={NavLink} to="/admin" activeClassName="selected" eventKey="admin" title="admin">Admin</Nav.Link>
+            </Nav.Item>
+          </Nav>
+          
+          <Jumbotron style={{marginTop:10}}>
+            <h1>Selamat Datang di Layanan BK-Online</h1>
             <p>
               Berikut ditampilkan jadwal per hari yang akan diperbarui tiap minggu. Silahkan melakukan pengajuan jadwal 
               sesuai ketersediaan. 
             </p>
-            <hr />
-            {/* <p className="mb-0">
-              Saya masuk sebagai:
-            </p> */}
-            <Nav variant="pills" defaultActiveKey="/">
-              <Nav.Item>
-                <Nav.Link as={NavLink} to="/" activeClassName="selected" eventKey="user1" title="user1">User1</Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link as={NavLink} to="/user2" activeClassName="selected" eventKey="user2" title="user2">User2</Nav.Link>
-              </Nav.Item>
-              <Nav.Item  onClick={()=>this.getDataFromAntrian()}>
-                <Nav.Link as={NavLink} to="/admin" activeClassName="selected" eventKey="admin" title="admin">Admin</Nav.Link>
-              </Nav.Item>
-            </Nav>
-          </Alert>
-          
+          </Jumbotron>
+
           <Switch>
             <Route exact path="/">
               <this.User1 />
