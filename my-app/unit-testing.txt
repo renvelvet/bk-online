@@ -1,0 +1,6 @@
+------- SKENARIO --------
+// homepage
+view user-1: ON
+hari senin: ON
+getJadwalSenin
+tab hari -> getJadwalHari

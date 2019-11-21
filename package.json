@@ -1,14 +1,15 @@
 {
-  "name": "betaclass-3",
+  "name": "bk-online",
   "version": "1.0.0",
   "description": "",
-  "main": "server-tugas.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
-    "url": "ark-betaclass3"
+    "url": "bk-online"
   },
   "author": "",
   "license": "ISC",
