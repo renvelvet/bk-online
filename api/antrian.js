@@ -21,9 +21,11 @@ app.get('/antrian',async(req, res)=>{
 // menambah antrian
 app.post('/antrian',async(req,res) => {
     try {
-        const {hari, jam, nama, nim, jurusan, approveid, deskripsi} = req.body
-        await db.query(`insert into antrian(nama, nim, jurusan, approveid, deskripsi)
-         values('${hari}', '${jam}', '${nama}', '${nim}', '${jurusan}', ${approveid}, '${deskripsi}')`)
+        const id_request= req.query.id_request;
+        const {hari, jam, nama, nim, jurusan, id_request, deskripsi} = req.body
+        const id_regist= await db.query(`select id_regist from mahasiswa where nim=${nim}`)
+        await db.query(`insert into antrian(id_request, id_regist, hari, jam, deskripsi)
+         values('${id_request}', '${id_regist}', '${hari}', '${jam}', '${deskripsi}')`)
         console.log(req.body)
         res.json(req.body)
     } catch (error) {
@@ -43,10 +45,10 @@ app.post('/antrian',async(req,res) => {
 
 
 // delete antrian by id
-app.delete('/antrian/:id',async(req,res)=>{
-    const id = req.params.id
-    await db.query(`DELETE FROM antrian WHERE id = ${id}`)
+/*app.delete('/antrian/:id_request',async(req,res)=>{
+    const id_request = req.params.id_request
+    await db.query(`DELETE FROM antrian WHERE id_request = ${id_request}`)
     res.json('Data terhapus')
-})
+})*/
 
 module.exports = app
