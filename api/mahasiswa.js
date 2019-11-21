@@ -3,12 +3,12 @@ const app = express()
 const Pool = require('pg').Pool
 
 const db = new Pool({
-    user: 'uaetadokirjgkq',
-    host: 'ec2-54-235-180-123.compute-1.amazonaws.com',
-    database: 'd4q7c8h4j06kav',
-    password: '6e55377fd08e351f4fd40d3d315cd0b299db0a88ed79c9e5015681b8ee70ccbb',
-    port: 5432,
-    ssl: true
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    port: process.env.DB_PORT,
+    ssl: false
 })
 
 db.connect()
@@ -19,18 +19,19 @@ app.get('/mahasiswa',async(req, res)=>{
 })
 
 // get mahasiswa by id
-app.get('/mahasiswa/:id',async(req, res)=>{
-    const id = req.params.id
-    const resData = await db.query(`select * from mahasiswa where id=${id}`)
+app.get('/mahasiswa/:id_registrasi',async(req, res)=>{
+    const id_registrasi = req.params.id_registrasi
+    const resData = await db.query(`select * from mahasiswa where id_registrasi=${id_registrasi}`)
     res.json(resData.rows)
 })
 
 // menambah data 
 app.post('/mahasiswa',async(req,res) => {
     try {
-        const {nama, nim, jurusan, approveid, deskripsi} = req.body
-        await db.query(`insert into mahasiswa(nama, nim, jurusan, approveid, deskripsi)
-         values('${nama}', ${nim}, '${jurusan}', ${approveid}, '${deskripsi}')`)
+        const id_registrasi= req.query.id_registrasi;
+        const {nama, nim, fakultas, jurusan, no_tlpn, mbti} = req.body
+        await db.query(`insert into mahasiswa(id_registrasi, nama, nim, fakultas, jurusan, no_telepon, mbti)
+         values('${id_registrasi}','${nama}', '${nim}', '${fakultas}, '${jurusan}', ${no_telepon}, '${mbti}')`)
         console.log(req.body)
         res.json(req.body)
     } catch (error) {
@@ -40,19 +41,19 @@ app.post('/mahasiswa',async(req,res) => {
 })
 
 // edit mahasiswa by id
-app.put('/mahasiswa/:id',async(req,res)=>{
-    const {nama, nim, jurusan, approveid, deskripsi} = req.body
-    const id = req.params.id
+app.put('/mahasiswa/:id_registrasi',async(req,res)=>{
+    const {nama, nim, fakultas, jurusan, no_tlpn, mbti} = req.body
+    const id_registrasi = req.params.id_registrasi
     
-    await db.query(`update mahasiswa set nama = '${nama}', nim = ${nim}, jurusan = '${jurusan}', approveid = ${approveid}, deskripsi = '${deskripsi}' 
+    await db.query(`update mahasiswa set nama = '${nama}', nim = ${nim}, fakultas = ${fakultas}, jurusan = '${jurusan}', no_tlpn = ${no_tlpn}, mbti = '${mbti}' 
     where id = ${id}`)
     res.json('data berhasil diubah')
 })
 
 // delete mahasiswa by id
-app.delete('/mahasiswa/:id',async(req,res)=>{
-    const id = req.params.id
-    await db.query(`DELETE FROM mahasiswa WHERE id = ${id}`)
+app.delete('/mahasiswa/:id_registrasi',async(req,res)=>{
+    const id_registrasi = req.params.id_registrasi
+    await db.query(`DELETE FROM mahasiswa WHERE id_registrasi = ${id_registrasi}`)
     res.json('Data terhapus')
 })
 

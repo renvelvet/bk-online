@@ -3,12 +3,12 @@ const app = express()
 const Pool = require('pg').Pool
 
 const db = new Pool({
-    user: 'uaetadokirjgkq',
-    host: 'ec2-54-235-180-123.compute-1.amazonaws.com',
-    database: 'd4q7c8h4j06kav',
-    password: '6e55377fd08e351f4fd40d3d315cd0b299db0a88ed79c9e5015681b8ee70ccbb',
-    port: 5432,
-    ssl: true
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    port: process.env.DB_PORT,
+    ssl: false
 })
 
 db.connect()
@@ -21,9 +21,11 @@ app.get('/antrian',async(req, res)=>{
 // menambah antrian
 app.post('/antrian',async(req,res) => {
     try {
-        const {hari, jam, nama, nim, jurusan, approveid, deskripsi} = req.body
-        await db.query(`insert into antrian(nama, nim, jurusan, approveid, deskripsi)
-         values('${hari}', '${jam}', '${nama}', ${nim}, '${jurusan}', ${approveid}, '${deskripsi}')`)
+        const id_request= req.query.id_request;
+        const {hari, jam, nama, nim, deskripsi} = req.body
+        const id_regist= await db.query(`select id_regist from mahasiswa where nim=${nim} and nama=${nama}`)
+        await db.query(`insert into antrian(id_request, id_regist, hari, jam, deskripsi)
+         values('${id_request}', '${id_regist}', '${hari}', '${jam}', '${deskripsi}')`)
         console.log(req.body)
         res.json(req.body)
     } catch (error) {
@@ -43,10 +45,10 @@ app.post('/antrian',async(req,res) => {
 
 
 // delete antrian by id
-app.delete('/antrian/:id',async(req,res)=>{
-    const id = req.params.id
-    await db.query(`DELETE FROM antrian WHERE id = ${id}`)
+/*app.delete('/antrian/:id_request',async(req,res)=>{
+    const id_request = req.params.id_request
+    await db.query(`DELETE FROM antrian WHERE id_request = ${id_request}`)
     res.json('Data terhapus')
-})
+})*/
 
 module.exports = app
