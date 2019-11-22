@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const port = 3001
 const app = Express()
+require('dotenv').config()
 
 const mahasiswa = require('./api/mahasiswa')
 const jadwal = require('./api/jadwal')
