@@ -1,6 +1,6 @@
 # BK Online
 
-BK Online adalah layanan berbasis website yang mendigitalisasi beberapa layanan BK untuk meminimalkan gap antara mahasiswa dengan layanan BK itu sendiri. Fungsionalitas yang diimplementasikan dalam proyek ini adalah proses pendaftaran sesi konseling.
+BK Online is a website-based service that digitizes several BK services to minimize the gap between students and its service. The functionality implemented in this project is the process of registering counseling sessions.
 
 ## How to run a program
 
@@ -20,7 +20,7 @@ $ npm i body-parser, cors, express, pg
 
 for my-app directory:
 ```
-$ npm i axios
+$ npm i axios, bootstrap, react, react-bootstrap, react-dom
 ```
 
 4. Run the program with 2 terminal
