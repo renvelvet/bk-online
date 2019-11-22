@@ -24,7 +24,12 @@ app.get('/mahasiswa/:id',async(req, res)=>{
     const resData = await db.query(`select * from mahasiswa where id=${id}`)
     res.json(resData.rows) 
 })
-
+// get mahasiswa by nim
+app.get('/mahasiswa/nim/:nim',async(req, res)=>{
+    const nim = req.params.nim
+    const resData = await db.query(`select * from mahasiswa where nim='${nim}'`)
+    res.json(resData.rows) 
+})
 // menambah data 
 app.post('/mahasiswa',async(req,res) => {
     try {

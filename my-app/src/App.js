@@ -11,6 +11,7 @@ import Axios from 'axios'
 const urlHari = 'http://127.0.0.1:3001/jadwal/hari'
 const urlJadwal = 'http://127.0.0.1:3001/jadwal'
 const urlMahasiswa = 'http://127.0.0.1:3001/mahasiswa'
+const urlNim = 'http://127.0.0.1:3001/mahasiswa/nim'
 const urlAntrian = 'http://127.0.0.1:3001/antrian'    
 
 class App extends Component{
@@ -20,11 +21,13 @@ class App extends Component{
     jadwalH:[],
     antrian:[],
     // ============ USER VIEW ==============
+    device1:1,
+    device2:2,
     showModal:false,
     hari:'Senin',
     jam:'',
     psikolog:'',
-    availability:'',
+    availability:true,
     nama:'',
     nim:'',
     jurusan:'',
@@ -96,8 +99,8 @@ class App extends Component{
   }
   // -----------------------SHOW/HIDE MODAL-----------------------
   showModal = (item) => {
-    const {hari, jam, psikolog} = item
-    this.setState({showModal:true, hari:hari, dJam:jam, dPsikolog:psikolog})
+    const {id, hari, jam, psikolog, availability} = item
+    this.setState({showModal:true, dId:id, dHari:hari, dJam:jam, dPsikolog:psikolog, dAvailability:availability})
     console.log(this.state)
   }
   hideModal = () => {
@@ -113,6 +116,13 @@ class App extends Component{
     this.setState({showModalJ:false})
   }
 
+  // --------------------- DISABLE BUTTON ------------------------
+  // approvedSchedule = (id, device) => {
+  //   this.setState(availability:false)
+  //   this.setState(dId:id)
+  //   this.setState(dHari:hari)
+  //   this.setState(dJam:jam)
+  // }
   // --------------------POST PUT GET DATABASE--------------------
   // Mendapatkan data dari jadwal
   getDataFromJadwalHari = async(a) => {
@@ -120,9 +130,10 @@ class App extends Component{
     // Axios.get(url)
     // .then(item => console.log(item))
     // .catch(error=> console.log({error}))
-    const url = `${urlHari}/${a}`
-    const resData = await Axios.get(url)
-    this.setState({jadwalH:resData.data})
+      const url = `${urlHari}/${a}`
+      const resData = await Axios.get(url)
+      this.setState({jadwalH:resData.data})
+      this.setState({hari:a})
     } catch (error) {
       console.log({error})
       alert('terjadi kesalahan')
@@ -155,6 +166,20 @@ class App extends Component{
         alert('terjadi kesalahan')
       }
   }
+  getDataMahasiswaByNim = async(n) => {
+    try {
+      // Axios.get(url)
+      // .then(item => console.log(item))
+      // .catch(error=> console.log({error}))
+      const nim = n
+      const url = `${urlNim}/${nim}`
+      const resData = await Axios.get(url)
+      this.setState({mahasiswaN:resData.data})
+      } catch (error) {
+        console.log({error})
+        alert('terjadi kesalahan')
+      }
+  }
   // Mendapatkan data dari tabel antrian
   getDataFromAntrian = async() => {
     try {
@@ -179,6 +204,26 @@ class App extends Component{
         availability:true
       })
       this.getDataFromJadwal()
+    } catch (err) {
+      console.log({err})
+      alert('gagal tambah jadwal')
+    }
+  }
+  // Menambah daftar antrian
+  postDataAntrian = async(a) => {
+    try {
+      await Axios.post(urlAntrian, {
+        // id_request:Number(this.state.dId),
+        hari:this.state.dHari,
+        jam:this.state.dJam,
+        nama:this.state.dNama,
+        nim:this.state.dNim,
+        no_tlpn:this.state.dNo_tlpn,
+        deskripsi:this.state.dDeskripsi,
+        device:a
+      })
+      this.hideModal()
+      // this.getDataFromJadwalHari()
     } catch (err) {
       console.log({err})
       alert('gagal tambah jadwal')
@@ -229,12 +274,18 @@ class App extends Component{
       alert('terjadi kesalahan')
     }
   }
-  // delete = (item) => {
-  //   const {id, nama, nim, no_tlpn} = item
-  //   this.setState({mId:id, mNama:nama, mNim:nim, mNo_tlpn:no_tlpn})
-  //   console.log(this.state)
-  //   this.deleteDataMahasiswa()
-  // }
+  deleteAntrian = async(item) => {
+    try {
+      const id = item
+      await Axios.delete(`${urlAntrian}/${id}`)
+      alert('Data berhasil dihapus')
+      console.log(id)
+      this.getDataFromAntrian()
+    } catch (err) {
+      console.log({err})
+      alert('terjadi kesalahan')
+    }
+  }
   // Menghapus data mahasiswa
   deleteDataMahasiswa = async(item) => {
     try {
@@ -288,6 +339,92 @@ class App extends Component{
                   <td>{item.jam}</td>
                   <td>{item.psikolog}</td>
                   <td style={{width:80}}>{item.availability}
+                    <Button variant="outline-primary" disabled={this.state.availability} onClick={()=>this.showModal(item)}>Propose</Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+
+          {/* Modal */}
+          <Modal show={this.state.showModal} onHide={()=>this.hideModal()}>
+            <Modal.Header closeButton>
+              <Modal.Title>Pengajuan Jadwal</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form style={{marginTop: 30}}>
+                  <Form.Group controlId="formGridNama">
+                    <Form.Label>Nama</Form.Label>
+                    <Form.Control onChange={(event)=>this.setState({dNama:event.target.value})} 
+                    style={{marginBottom:10}} required type="text" placeholder="Enter Name" />
+                  </Form.Group>
+                  <Form.Group controlId="formGridNim">
+                    <Form.Label>NIM</Form.Label>
+                    <Form.Control onChange={(event)=>this.setState({dNim:event.target.value})} 
+                    style={{marginBottom:10}} required type="text" placeholder="Enter NIM" />
+                  </Form.Group>
+                  <Form.Group controlId="formGridNotelp">
+                    <Form.Label>No. Hp</Form.Label>
+                    <Form.Control onChange={(event)=>this.setState({dNo_tlpn:event.target.value})} 
+                    style={{marginBottom:10}} required type="text" placeholder="Enter Phone Number" />
+                  </Form.Group>
+                  <Form.Group controlId="formGridDesc">
+                    <Form.Label>Description</Form.Label>
+                    <Form.Control required type="text" onChange={(event)=>this.setState({dDeskripsi:event.target.value})} 
+                    style={{marginBottom:10}} placeholder="Please give a brief description" />
+                  </Form.Group>
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="primary" type="submit" onClick={()=>this.postDataAntrian(1)}>
+                  Submit
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
+        </Container>
+    )
+  }
+
+  User2 = () => {
+    const handleSelect = eventKey => {this.getDataFromJadwalHari(eventKey)}
+    
+    return(
+      
+        <Container>         
+          <Nav variant="tabs" defaultActiveKey="Senin" onSelect={handleSelect} style={{marginBottom:30, marginTop:10}}>
+            <Nav.Item onClick={()=>this.handleChangeHari()}>
+              <Nav.Link eventKey="Senin">Senin</Nav.Link>
+            </Nav.Item>
+            <Nav.Item onClick={()=>this.handleChangeHari()}>
+              <Nav.Link eventKey="Selasa">Selasa</Nav.Link>
+            </Nav.Item>
+            <Nav.Item onClick={()=>this.handleChangeHari()}>
+              <Nav.Link eventKey="Rabu">Rabu</Nav.Link>
+            </Nav.Item >
+            <Nav.Item onClick={()=>this.handleChangeHari()}>
+              <Nav.Link eventKey="Kamis">Kamis</Nav.Link>
+            </Nav.Item>
+            <Nav.Item onClick={()=>this.handleChangeHari()}>
+              <Nav.Link eventKey="Jumat">Jumat</Nav.Link>
+            </Nav.Item>
+          </Nav>
+
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th style={{width:80, textAlign: "center"}}>Jam</th>
+                <th style={{textAlign: "center"}}>Konselor</th>
+                <th style={{textAlign: "center"}}>Availability</th>
+              </tr>
+            </thead>
+            <tbody>
+              {this.state.jadwalH.map((item, index)=>(
+                <tr key={index}>
+                  {/* <td>{index+1}</td> */}
+                  <td>{item.jam}</td>
+                  <td>{item.psikolog}</td>
+                  <td style={{width:80}}>{item.availability}
                     <Button variant="outline-primary" onClick={()=>this.showModal(item)}>Propose</Button>
                   </td>
                 </tr>
@@ -302,57 +439,36 @@ class App extends Component{
             </Modal.Header>
             <Modal.Body>
               <Form style={{marginTop: 30}}>
-                <Form.Row>
-                  <Form.Group as={Col} controlId="formGridName">
+                  <Form.Group controlId="formGridNama">
                     <Form.Label>Nama</Form.Label>
                     <Form.Control onChange={(event)=>this.setState({dNama:event.target.value})} 
                     style={{marginBottom:10}} required type="text" placeholder="Enter Name" />
                   </Form.Group>
-
-                  <Form.Group as={Col} controlId="formGridNIM">
+                  <Form.Group controlId="formGridNim">
                     <Form.Label>NIM</Form.Label>
-                    <Form.Control onChange={(event)=>this.setState({dNIM:event.target.value})}
-                    required type="text" placeholder="Enter NIM" />
-                    <Form.Control.Feedback type="invalid">
-                      Please provide a valid NIM.
-                    </Form.Control.Feedback>
+                    <Form.Control onChange={(event)=>this.setState({dNim:event.target.value})} 
+                    style={{marginBottom:10}} required type="text" placeholder="Enter NIM" />
                   </Form.Group>
-                </Form.Row>
-
-                <Form.Group controlId="formGridJurusan">
-                  <Form.Label>Pilih jurusan</Form.Label>
-                  <Form.Control required as="select" value={this.state.dJurusan} onChange={(event)=>this.setState({dJurusan:event.target.value})}>
-                      <option value="STI">STI</option>
-                      <option value="IF">IF</option>
-                      <option value="TPSDA">TPSDA</option>
-                      <option value="MA">MA</option>
-                      <option value="EB">EB</option>
-                      <option value="EL">EL</option>
-                    </Form.Control>
-                  {/* <Form.Control.Feedback type="invalid">
-                      Please provide a valid email.
-                  </Form.Control.Feedback> */}
-                </Form.Group>
-  
-                <Form.Group controlId="formGridDesc">
-                  <Form.Label>Description</Form.Label>
-                  <Form.Control required type="text" onChange={(event)=>this.setState({dDeskripsi:event.target.value})} 
+                  <Form.Group controlId="formGridNotelp">
+                    <Form.Label>No. Hp</Form.Label>
+                    <Form.Control onChange={(event)=>this.setState({dNo_tlpn:event.target.value})} 
+                    style={{marginBottom:10}} required type="text" placeholder="Enter Phone Number" />
+                  </Form.Group>
+                  <Form.Group controlId="formGridDesc">
+                    <Form.Label>Description</Form.Label>
+                    <Form.Control required type="text" onChange={(event)=>this.setState({dDeskripsi:event.target.value})} 
                     style={{marginBottom:10}} placeholder="Please give a brief description" />
                   </Form.Group>
               </Form>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="primary" type="submit" onClick={()=>this.postDataMahasiswa()}>
+              <Button variant="primary" type="submit" onClick={()=>this.postDataAntrian(2)}>
                   Submit
               </Button>
             </Modal.Footer>
           </Modal>
         </Container>
-    )
-  }
-
-  User2 = () => {
-    
+    )    
   }
   
   Antrian = () => {
@@ -364,30 +480,30 @@ class App extends Component{
           <thead>
             <tr>
             {/* nama, nim, jurusan, approveid, deskripsi */}
-              <th style={{textAlign: "center"}}>Hari</th>
-              <th style={{textAlign: "center"}}>Jam</th>
-              <th style={{width:80, textAlign: "center"}}>Nama</th>
-              <th style={{textAlign: "center"}}>NIM</th>
-              <th style={{textAlign: "center"}}>Jurusan</th>
+              <th style={{width:10, textAlign: "center"}}>#</th>
+              <th style={{width:20, textAlign: "center"}}>Hari</th>
+              <th style={{width:20, textAlign: "center"}}>Jam</th>
+              <th style={{width:200, textAlign: "center"}}>Nama</th>
+              <th style={{width:40, textAlign: "center"}}>NIM</th>
+              <th style={{width:60, textAlign: "center"}}>Kontak</th>
               <th style={{textAlign: "center"}}>Deskripsi</th>
+              <th style={{textAlign: "center"}}>Action</th>
             </tr>
           </thead>
           <tbody>
             {this.state.antrian.map((item, index)=>(
               <tr key={index}>
-                {/* <td>{index+1}</td> */}
+                <td>{index+1}</td>
                 <td>{item.hari}</td>
                 <td>{item.jam}</td>
                 <td>{item.nama}</td>
                 <td>{item.nim}</td>
-                <td>{item.jurusan}</td>
+                <td>{item.no_tlpn}</td>
                 <td>{item.deskripsi}</td>
-                <td style={{width:80}}>{item.approvedid}
-                  <Button variant="outline-primary" onClick={()=>this.editDataJadwal(item)} disabled="true">Approve</Button>
+                <td style={{width:80, textAlign:"center"}}>
+                  <Button variant="success" size="sm" onClick={()=>this.approveSchedule(item.id, item.device)}>Approve</Button>
+                  <Button style={{marginTop:5}}variant="outline-danger" size="sm" onClick={()=>this.deleteAntrian(item.id)}>Dismiss</Button>
                 </td>
-                {/* <td >
-                  <Button variant='warning' onClick={()=>this.showModal(item)}>Edit/Delete</Button>
-                </td> */}
               </tr>
             ))}
           </tbody>
@@ -650,9 +766,9 @@ class App extends Component{
             <Route path="/user1">
               <this.User1 />
             </Route>
-            {/* <Route path="/user2">
-              <User2 />
-            </Route>*/}
+            <Route path="/user2">
+              <this.User2 />
+            </Route>
             <Route path="/admin">
               <this.Admin />
             </Route>
