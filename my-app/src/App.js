@@ -10,13 +10,16 @@ import Axios from 'axios'
 
 const urlHari = 'http://127.0.0.1:3001/jadwal/hari'
 const urlJadwal = 'http://127.0.0.1:3001/jadwal'
+const urlMahasiswa = 'http://127.0.0.1:3001/mahasiswa'
 const urlAntrian = 'http://127.0.0.1:3001/antrian'    
 
 class App extends Component{
   state = {
     jadwal:[],
+    mahasiswa:[],
     jadwalH:[],
     antrian:[],
+    // ============ USER VIEW ==============
     showModal:false,
     hari:'Senin',
     jam:'',
@@ -25,26 +28,37 @@ class App extends Component{
     nama:'',
     nim:'',
     jurusan:'',
+    fakultas:'',
+    no_tlpn:'',
     deskripsi:'',
-    approveid:'',
+    
+    // ------- TAMBAH DATA MAHASISWA ------
+    mNama:'',
+    mNim:'',
+    // mFakultas:'',
+    // mJurusan:'',
+    mNo_tlpn:'',
+    mDeskripsi:'',
+    // --------------- MODAL --------------
+    dNama:'',
+    dNim:'',
+    // dJurusan:'',
+    // dFakultas:'',
+    mId:'',
+    dNo_tlpn:'',
+    dDeskripsi:'',
     // ---------- TAMBAH JADWAL -----------
     jPsikolog:'',
     jJam:'',
     jHari:'',
     showModalJ:false,
-    jId:'',
     jAvailability:'',
-    // untuk show modal
+    // --------------- MODAL --------------
     dHari:'',
     dId:'',
     dJam:'',
     dPsikolog:'',
-    dAvailability:'',
-    dNama:'',
-    dNIM:'',
-    dJurusan:'',
-    dDeskripsi:'',
-    dApproveId:''
+    dAvailability:''
   }
 
   constructor(props) {
@@ -127,6 +141,20 @@ class App extends Component{
         alert('terjadi kesalahan')
       }
   }
+  // Mendapatkan data dari tabel mahasiswa
+  getDataFromMahasiswa = async() => {
+    try {
+      // Axios.get(url)
+      // .then(item => console.log(item))
+      // .catch(error=> console.log({error}))
+      const url = `${urlMahasiswa}`
+      const resData = await Axios.get(url)
+      this.setState({mahasiswa:resData.data})
+      } catch (error) {
+        console.log({error})
+        alert('terjadi kesalahan')
+      }
+  }
   // Mendapatkan data dari tabel antrian
   getDataFromAntrian = async() => {
     try {
@@ -150,31 +178,21 @@ class App extends Component{
         psikolog:this.state.jPsikolog,
         availability:true
       })
+      this.getDataFromJadwal()
     } catch (err) {
       console.log({err})
       alert('gagal tambah jadwal')
     }
-    this.getDataFromJadwal()
   }
   // Mendaftarkan data mahasiswa untuk sesi konseling
-  postDataMahasiswa = async() => {
-    
+  postDataForMahasiswa = async() => {
     try {
-      // if () {
-
-      // }
-      console.log(this.state.hari)
-      await Axios.post(urlAntrian,{
-        // hari:this.state.hari,
-        // jam:this.state.dJam,
-        nama:this.state.dNama,
-        nim:Number(this.state.dNIM),
-        jurusan:this.state.dJurusan,
-        approveid:Number(0),
-        deskripsi:this.state.dDeskripsi
-      
+      await Axios.post(urlMahasiswa,{
+        nama:this.state.mNama,
+        nim:this.state.mNim,
+        no_tlpn:this.state.mNo_tlpn
       })
-      this.setState({showModal:false})
+      this.getDataFromMahasiswa()
     } catch (error) {
       console.log({error})
       alert('terjadi kesalahan')
@@ -208,6 +226,25 @@ class App extends Component{
       this.getDataFromJadwal()
     } catch (error) {
       console.log({error})
+      alert('terjadi kesalahan')
+    }
+  }
+  // delete = (item) => {
+  //   const {id, nama, nim, no_tlpn} = item
+  //   this.setState({mId:id, mNama:nama, mNim:nim, mNo_tlpn:no_tlpn})
+  //   console.log(this.state)
+  //   this.deleteDataMahasiswa()
+  // }
+  // Menghapus data mahasiswa
+  deleteDataMahasiswa = async(item) => {
+    try {
+      const id = item
+      await Axios.delete(`${urlMahasiswa}/${id}`)
+      alert('Data berhasil dihapus')
+      console.log(id)
+      this.getDataFromMahasiswa()
+    } catch (err) {
+      console.log({err})
       alert('terjadi kesalahan')
     }
   }
@@ -491,6 +528,62 @@ class App extends Component{
     )
   }
 
+  TambahMahasiswa = () => {
+    return (
+      <Container style={{marginTop:20}}>
+        <Form>
+          <Form.Group controlId="formGridNama">
+            <Form.Label>Nama mahasiswa</Form.Label>
+            <Form.Control 
+              onChange={(event)=>this.setState({mNama:event.target.value})}
+              placeholder="Enter Student's Name" />
+          </Form.Group>
+          <Form.Group controlId="formGridNim">
+            <Form.Label>NIM</Form.Label>
+            <Form.Control 
+              onChange={(event)=>this.setState({mNim:event.target.value})}
+              placeholder="NIM" />
+          </Form.Group>
+          <Form.Group controlId="formGridNo_tlpn">
+            <Form.Label>No WA</Form.Label>
+            <Form.Control 
+              onChange={(event)=>this.setState({mNo_tlpn:event.target.value})}
+              placeholder="Phone number" />
+          </Form.Group>
+
+          <Button onClick={()=>this.postDataForMahasiswa()} variant="primary" type="submit">
+          ADD
+          </Button>
+          </Form>
+        
+        {/* Tabel Jadwal */}
+        <Table striped bordered hover style={{marginTop:20}}>
+          <thead>
+            <tr style={{textAlign:"center"}}>
+              <th style={{width:20}}>#</th>
+              <th>Nama</th>
+              <th>NIM</th>
+              <th>No. HP</th>
+              <th style={{width:100}}>Hapus Data</th>
+            </tr>
+          </thead>
+          <tbody>
+           {this.state.mahasiswa.map((item, index)=>(
+             <tr key={index}>
+              <td>{index+1}</td>
+              <td>{item.nama}</td>
+              <td>{item.nim}</td>
+              <td>{item.no_tlpn}</td>
+              <td style={{width:80, textAlign:"center"}}>
+                <Button variant='danger' onClick={()=>this.deleteDataMahasiswa(item.id)}>Delete</Button>
+              </td>
+           </tr>
+           ))}
+          </tbody>
+        </Table>
+      </Container>
+    )
+  }
   Admin = () => {
     return(
       <Router>
@@ -503,6 +596,9 @@ class App extends Component{
           <Nav.Item onClick={()=>this.getDataFromJadwal()}>
             <Nav.Link as={NavLink} to="/tambahjadwal" eventKey="tambahjadwal">Tambah Jadwal</Nav.Link>
           </Nav.Item>
+          <Nav.Item onClick={()=>this.getDataFromMahasiswa()}>
+            <Nav.Link as={NavLink} to="/tambahmahasiswa" eventKey="tambahmahasiswa">Tambah Data Mahasiswa</Nav.Link>
+          </Nav.Item>
         </Nav>
 
         <Switch>
@@ -511,6 +607,9 @@ class App extends Component{
           </Route>
           <Route path="/tambahjadwal">
             <this.TambahJadwal />
+          </Route>
+          <Route path="/tambahmahasiswa">
+            <this.TambahMahasiswa />
           </Route>
         </Switch>
 

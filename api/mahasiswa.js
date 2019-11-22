@@ -14,24 +14,23 @@ const db = new Pool({
 db.connect()
 // get seluruh mahasiswa
 app.get('/mahasiswa',async(req, res)=>{
-    const resData = await db.query('select * from mahasiswa')
+    const resData = await db.query('select * from mahasiswa order by nama')
     res.json(resData.rows)
 })
 
 // get mahasiswa by id
-app.get('/mahasiswa/:id_registrasi',async(req, res)=>{
-    const id_registrasi = req.params.id_registrasi
-    const resData = await db.query(`select * from mahasiswa where id_registrasi=${id_registrasi}`)
-    res.json(resData.rows)
+app.get('/mahasiswa/:id',async(req, res)=>{
+    const id = req.params.id
+    const resData = await db.query(`select * from mahasiswa where id=${id}`)
+    res.json(resData.rows) 
 })
 
 // menambah data 
 app.post('/mahasiswa',async(req,res) => {
     try {
-        const id_registrasi= req.query.id_registrasi;
-        const {nama, nim, fakultas, jurusan, no_tlpn, mbti} = req.body
-        await db.query(`insert into mahasiswa(id_registrasi, nama, nim, fakultas, jurusan, no_telepon, mbti)
-         values('${id_registrasi}','${nama}', '${nim}', '${fakultas}, '${jurusan}', ${no_telepon}, '${mbti}')`)
+        const {nama, nim, no_tlpn} = req.body
+        await db.query(`insert into mahasiswa(nama, nim, no_tlpn)
+         values('${nama}', '${nim}', '${no_tlpn}')`)
         console.log(req.body)
         res.json(req.body)
     } catch (error) {
@@ -40,20 +39,10 @@ app.post('/mahasiswa',async(req,res) => {
     }
 })
 
-// edit mahasiswa by id
-app.put('/mahasiswa/:id_registrasi',async(req,res)=>{
-    const {nama, nim, fakultas, jurusan, no_tlpn, mbti} = req.body
-    const id_registrasi = req.params.id_registrasi
-    
-    await db.query(`update mahasiswa set nama = '${nama}', nim = ${nim}, fakultas = ${fakultas}, jurusan = '${jurusan}', no_tlpn = ${no_tlpn}, mbti = '${mbti}' 
-    where id = ${id}`)
-    res.json('data berhasil diubah')
-})
-
 // delete mahasiswa by id
-app.delete('/mahasiswa/:id_registrasi',async(req,res)=>{
-    const id_registrasi = req.params.id_registrasi
-    await db.query(`DELETE FROM mahasiswa WHERE id_registrasi = ${id_registrasi}`)
+app.delete('/mahasiswa/:id',async(req,res)=>{
+    const id = req.params.id
+    await db.query(`DELETE FROM mahasiswa WHERE id = ${id}`)
     res.json('Data terhapus')
 })
 
